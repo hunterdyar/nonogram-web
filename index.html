@@ -23,7 +23,9 @@
         height: 10,// rows
         level: [],
         rowHints: [],
-        colHints: []
+        colHints: [],
+        rowHintItems: [],
+        colHintItems: []
     }
     const padding = {x:0,y:0};
     const white = PIXI.Texture.from("/img/white.png");
@@ -71,15 +73,13 @@
         hints.removeChildren();
 
         //recalculate hints
-        let blockNumber = 0;
-        let prevFilled = false;
 
         //ROWS
         puzzle.rowHints = [];
         for(let r = 0;r<puzzle.height;r++)
         {
-            prevFilled = false;
-            blockNumber = 0;
+            let prevFilled = false;
+            let blockNumber = 0;
             puzzle.rowHints[r] = [];
             puzzle.rowHints[r][blockNumber] = 0;
 
@@ -106,8 +106,8 @@
         puzzle.colHints = [];
         for(let c = 0;c<puzzle.width;c++)
         {
-            blockNumber = 0;
-            prevFilled = false;
+            let blockNumber = 0;
+            let prevFilled = false;
             puzzle.colHints[c] = [];
             puzzle.colHints[c][blockNumber] = 0;
 
@@ -132,48 +132,44 @@
         }
 
         //Draw the hints
-        let textOpts = {
-            align: 'center',
-            fontSize: 32,
+        function createHint(gridX,gridY,value)
+        {
+            let world = gridToWorldCoordinates(gridX,gridY);
+            let hint = {
+                x: gridX,
+                y: gridY,
+                value:  value,
+                text: new PIXI.Text(value.toString(),{
+                    align: 'center',
+                    fontSize: 32,
+                })
+            };
+            let offset = (puzzle.boxDisplaySize - hint.text.width)/2
+            hint.text.x = world.x+offset;
+            hint.text.y = world.y;
+            hintElements.push(hint.text);
+            hints.addChild(hint.text);
+            return hint;
         }
-        //rows
+        //row text items
+        puzzle.rowHintItems = []
         for(let r = 0;r<puzzle.height;r++)
         {
+            puzzle.rowHintItems[r] = [];
             for(let i = 0;i<puzzle.rowHints[r].length;i++)
             {
-                let gridPos = {x:-1-i,y:r};
-                let world = gridToWorldCoordinates(gridPos.x,gridPos.y);
-                let hint = {
-                    x: gridPos.x,
-                    y: gridPos.y,
-                    value:  puzzle.rowHints[r][i],
-                    text: new PIXI.Text(puzzle.rowHints[r][i].toString(),textOpts)
-                };
-                let offset = -(puzzle.width - hint.text.width)/2
-                hint.text.x = world.x+offset;
-                hint.text.y = world.y;
-                hintElements.push(hint.text);//for reference?
-                hints.addChild(hint.text);//do the thing
+                //add to array of hintsObjects.
+                puzzle.rowHintItems[r][i] = createHint(-1-i,r,puzzle.rowHints[r][i])
             }
         }
-        //cols
+        //col text items
+        puzzle.colHintItems = [];
         for(let c = 0;c<puzzle.width;c++)
         {
+            puzzle.colHintItems[c] = [];
             for(let i = 0;i<puzzle.colHints[c].length;i++)
             {
-                let gridPos = {x:c,y:-1-i};
-                let world = gridToWorldCoordinates(gridPos.x,gridPos.y);
-                let hint = {
-                    x: gridPos.x,
-                    y: gridPos.y,
-                    value:  puzzle.colHints[c][i],
-                    text: new PIXI.Text(puzzle.colHints[c][i].toString(),textOpts)
-                };
-                let offset = -(puzzle.width - hint.text.width)/2
-                hint.text.x = world.x + offset;
-                hint.text.y = world.y;
-                hintElements.push(hint.text);//for reference?
-                hints.addChild(hint.text);//do the thing
+                puzzle.colHintItems[c][i] = createHint(c,-1-i,puzzle.colHints[c][i])
             }
         }
     }
