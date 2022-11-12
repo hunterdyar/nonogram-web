@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+    <script src="js/pixi.js"></script>
+</head>
+<body>
+<script>
+    const app = new PIXI.Application({
+            background: 0xcccccc
+    });
+
+    document.body.appendChild(app.view);
+
+    const field = new PIXI.Container();
+    const hints = new PIXI.Container();
+    app.stage.addChild(field);
+    // create an array to store all the sprites
+    const boxElements = [];//pile of grid sprites
+    const hintElements = [];//pile of text boxes
+    const puzzle = {
+        boxDisplaySize: 32,//display size
+        width: 10,//cols
+        height: 10,// rows
+        level: [],
+        rowHints: [],
+        colHints: []
+    }
+    const padding = {x:0,y:0};
+    const white = PIXI.Texture.from("/img/white.png");
+    //initialize level + grid
+    for (let i = 0; i < puzzle.width; i++) {
+        puzzle.level[i] = [];
+        for(let j = 0; j < puzzle.height; j++) {
+            // create a new Sprite
+            const square = PIXI.Sprite.from(white);//16x16
+            // set the anchor point to the top left.
+            square.anchor.set(0,0);
+            let scale = puzzle.boxDisplaySize/16;//16 = texture->width
+            square.scale.set(scale);
+
+            let c = gridToWorldCoordinates(i,j);
+            square.x = c.x;
+            square.y = c.y;
+
+            // square.tint = Math.random() * 0x808080;
+
+            boxElements.push(square);
+            //level data
+            puzzle.level[i][j] = {
+                x: i,
+                y: j,
+                filled:false,
+                box:square,
+                flip: function(){
+                    this.setFilled(!this.filled);
+                },
+                setFilled: function(f)
+                {
+                    this.filled = f;
+                    this.box.tint = this.filled ? 0x000000 : 0xFFFFFF;
+                }
+            };
+
+            field.addChild(square);
+        }
+    }
+
+    function createHints()
+    {
+        //clear existing hints
+        hints.removeChildren();
+
+        //recalculate hints
+        let blockNumber = 0;
+        let prevFilled = false;
+
+        //ROWS
+        puzzle.rowHints = [];
+        for(let r = 0;r<puzzle.height;r++)
+        {
+            prevFilled = false;
+            blockNumber = 0;
+            puzzle.rowHints[r] = [];
+            puzzle.rowHints[r][blockNumber] = 0;
+
+            for(let c = 0;c<puzzle.width;c++){
+                if(puzzle.level[c][r].filled)
+                {
+                    //we have a block
+                    if(prevFilled)
+                    {
+                        puzzle.rowHints[r][blockNumber] += 1;
+                    }else{
+                        blockNumber++;
+                        puzzle.rowHints[r][blockNumber] = 1;//initialize new hint
+                    }
+                    prevFilled = true;//set previous
+                }else{
+                    prevFilled = false;//set previous
+                }
+            }
+            puzzle.rowHints[r].shift();
+            puzzle.rowHints[r].reverse();
+        }
+        //COLS
+        puzzle.colHints = [];
+        for(let c = 0;c<puzzle.width;c++)
+        {
+            blockNumber = 0;
+            prevFilled = false;
+            puzzle.colHints[c] = [];
+            puzzle.colHints[c][blockNumber] = 0;
+
+            for(let r = 0;r<puzzle.width;r++){
+                if(puzzle.level[c][r].filled)
+                {
+                    //we have a block
+                    if(prevFilled)
+                    {
+                        puzzle.colHints[c][blockNumber] += 1;
+                    }else{
+                        blockNumber++;
+                        puzzle.colHints[c][blockNumber] = 1;//initialize new hint
+                    }
+                    prevFilled = true;//set previous
+                }else{
+                    prevFilled = false;//set previous
+                }
+            }
+            puzzle.colHints[c].shift();
+            puzzle.colHints[c].reverse();
+        }
+
+        //Draw the hints
+        let textOpts = {
+            align: 'center',
+            fontSize: 32,
+        }
+        //rows
+        for(let r = 0;r<puzzle.height;r++)
+        {
+            for(let i = 0;i<puzzle.rowHints[r].length;i++)
+            {
+                let gridPos = {x:-1-i,y:r};
+                let world = gridToWorldCoordinates(gridPos.x,gridPos.y);
+                let hint = {
+                    x: gridPos.x,
+                    y: gridPos.y,
+                    value:  puzzle.rowHints[r][i],
+                    text: new PIXI.Text(puzzle.rowHints[r][i].toString(),textOpts)
+                };
+                let offset = -(puzzle.width - hint.text.width)/2
+                hint.text.x = world.x+offset;
+                hint.text.y = world.y;
+                hintElements.push(hint.text);//for reference?
+                hints.addChild(hint.text);//do the thing
+            }
+        }
+        //cols
+        for(let c = 0;c<puzzle.width;c++)
+        {
+            for(let i = 0;i<puzzle.colHints[c].length;i++)
+            {
+                let gridPos = {x:c,y:-1-i};
+                let world = gridToWorldCoordinates(gridPos.x,gridPos.y);
+                let hint = {
+                    x: gridPos.x,
+                    y: gridPos.y,
+                    value:  puzzle.colHints[c][i],
+                    text: new PIXI.Text(puzzle.colHints[c][i].toString(),textOpts)
+                };
+                let offset = -(puzzle.width - hint.text.width)/2
+                hint.text.x = world.x + offset;
+                hint.text.y = world.y;
+                hintElements.push(hint.text);//for reference?
+                hints.addChild(hint.text);//do the thing
+            }
+        }
+    }
+
+    //
+    app.stage.addChild(hints);
+
+
+    //create cursor
+    const cursor = PIXI.Sprite.from("/img/cursor.png");
+    cursor.scale = boxElements[0].scale;//match box, only want to do the math once :p
+    let c = gridToWorldCoordinates(0,0);
+    cursor.x = c.x;
+    cursor.y = c.y;
+    cursor.roundPixels = true;
+    app.stage.addChild(cursor);
+
+    // Move containers to the center
+    field.x = (app.screen.width / 2) - (puzzle.boxDisplaySize*puzzle.width/2);
+    field.y = (app.screen.height / 2) - (puzzle.boxDisplaySize*puzzle.height/2);
+
+    let tick = 0;
+
+    const mouseCoords = { x: 0, y: 0 };
+    let mouseGridCoords = {x:0,y:0};
+    app.stage.interactive = true;
+    app.stage.hitArea = app.screen;
+    app.stage.on('mousemove', (event) => {
+        mouseCoords.x = event.global.x;
+        mouseCoords.y = event.global.y;
+    });
+
+    app.stage.on('click', (event) => {
+        console.log("click");
+        let c = mouseGridCoords;
+        if(c.x >= 0 && c.x <puzzle.width && c.y >= 0 && c.y < puzzle.height)
+        {
+            //
+            puzzle.level[c.x][c.y].flip();
+            createHints();
+        }
+    });
+
+    app.ticker.add(() => {
+        mouseGridCoords = worldToGridCoordinates(mouseCoords.x,mouseCoords.y);
+        //move cursor
+        let c = gridToWorldCoordinates(mouseGridCoords.x,mouseGridCoords.y);
+        cursor.x = c.x;
+        cursor.y = c.y;
+        // increment the ticker
+
+        tick += 0.1;
+    });
+
+    function gridToWorldCoordinates(x,y)
+    {
+        return {x:x*puzzle.boxDisplaySize+padding.x+field.x,y:y*puzzle.boxDisplaySize+padding.y+field.y};
+        //x*bs+p = wx
+        //(wx-p)/bs
+    }
+    function worldToGridCoordinates(wx,wy)
+    {
+        // let x = Math.floor(((wx-field.x)-padding.x)/boxSize);
+        return {x:Math.floor((wx-field.x-padding.x)/puzzle.boxDisplaySize),y:Math.floor((wy-field.y-padding.y)/puzzle.boxDisplaySize)};
+    }
+</script>
+</body>
+</html>
