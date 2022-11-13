@@ -178,9 +178,8 @@ function createHints()
                 fill: theme.hintTextColor
             })
         };
-        let offset = (puzzle.boxDisplaySize - hint.text.width)/2
-        hint.text.x = world.x+offset;
-        hint.text.y = world.y;
+        hint.text.x = world.x+((puzzle.boxDisplaySize - hint.text.width)/2);
+        hint.text.y = world.y+((puzzle.boxDisplaySize - hint.text.height)/2);
         hintElements.push(hint.text);
         hints.addChild(hint.text);
         return hint;
