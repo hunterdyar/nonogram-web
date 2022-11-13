@@ -33,7 +33,8 @@ const puzzle = {
     rowHints: [],
     colHints: [],
     rowHintItems: [],
-    colHintItems: []
+    colHintItems: [],
+    changedThisTick: false
 }
 const input = {
     //mouse == cursor... for now!
@@ -93,6 +94,7 @@ for (let i = 0; i < puzzle.width; i++) {
             {
                 this.filled = f;
                 this.box.tint = this.filled ? theme.filledColor : theme.emptyColor;
+                puzzle.changedThisTick = true;
             }
         };
 
@@ -224,15 +226,17 @@ app.stage.addChild(input.cursorSprite);
 field.x = (app.screen.width / 2) - (puzzle.boxDisplaySize*puzzle.width/2);
 field.y = (app.screen.height / 2) - (puzzle.boxDisplaySize*puzzle.height/2);
 
-//High-level input things. (other input handled in object methods).
+//Reacting to input events
 let tick = 0;
 app.stage.interactive = true;
 app.stage.hitArea = app.screen;
-app.stage.on('mousemove', (event) => {
+//pointer combines mouse and tap/touch
+app.stage.on('pointermove', (event) => {
     input.mouseWorldCoords.x = event.global.x;
     input.mouseWorldCoords.y = event.global.y;
 });
 
+//[
 app.stage.on('pointerdown', (event) => {
     console.log("click");
     let c = input.mouseGridCoords;
@@ -242,12 +246,21 @@ app.stage.on('pointerdown', (event) => {
     }
 });
 
+//Top level Game Loop
 app.ticker.add(() => {
     input.tick();
+
+    if(puzzle.changedThisTick)
+    {
+        //Check validation/solver
+    }
+    //reset
+    puzzle.changedThisTick = false;
     // increment the ticker
     tick += 0.1;
 });
 
+//Utility functions
 function gridToWorldCoordinates(x,y)
 {
     return {x:x*puzzle.boxDisplaySize+padding.x+field.x,y:y*puzzle.boxDisplaySize+padding.y+field.y};
