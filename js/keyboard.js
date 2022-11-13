@@ -6,11 +6,11 @@ class Keyboard {
     rightButton;
     allButtons ;
     constructor() {
-        this.flipButton = new ButtonState("Space");
-        this.upButton = new ButtonState("KeyW");
-        this.downButton = new ButtonState("KeyS");
-        this.leftButton = new ButtonState("KeyA");
-        this.rightButton = new ButtonState("KeyD");
+        this.flipButton = new ButtonState("Space","Enter");
+        this.upButton = new ButtonState("KeyW","ArrowUp");
+        this.downButton = new ButtonState("KeyS","ArrowDown");
+        this.leftButton = new ButtonState("KeyA","ArrowLeft");
+        this.rightButton = new ButtonState("KeyD","ArrowRight");
         this.allButtons = [this.flipButton,this.downButton,this.upButton,this.leftButton,this.rightButton]
     }
 
@@ -30,8 +30,10 @@ class Keyboard {
 class ButtonState
 {
     keyCode;
-    constructor(keycode) {
+    altCode;
+    constructor(keycode,altcode) {
         this.keyCode = keycode;
+        this.altCode = altcode;
     }
     prevDown = false;//internally used
     isDown = false;
@@ -65,8 +67,9 @@ class ButtonState
 const keyboard = new Keyboard();
 window.addEventListener(
         "keydown", (event) => {
+            console.log(event.code);
             keyboard.allButtons.forEach(function(b){
-                if(b.keyCode === event.code)
+                if(b.keyCode === event.code || b.altCode === event.code)
                 {
                     b.isDown = true;
                 }
@@ -77,7 +80,7 @@ window.addEventListener(
 window.addEventListener(
         "keyup", (event) => {
             keyboard.allButtons.forEach(function(b){
-                if(b.keyCode === event.code)
+                if(b.keyCode === event.code || b.altCode === event.code)
                 {
                     b.isDown = false;
                 }
