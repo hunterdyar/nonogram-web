@@ -41,7 +41,7 @@ class Input  {
                 {
                     //allows us to click/drag over tiles.
                     if(isCoordInBounds(this.mouseGridCoords)){
-                        if(this.setToFill !== puzzle.level[this.mouseGridCoords.x][this.mouseGridCoords.y].filled)
+                        if(this.setToFill !== puzzle.level[this.mouseGridCoords.x][this.mouseGridCoords.y].isFilled())
                         {
                             puzzle.level[this.mouseGridCoords.x][this.mouseGridCoords.y].setFilled(this.setToFill);
                         }

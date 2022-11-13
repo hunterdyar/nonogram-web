@@ -47,25 +47,37 @@ function initializeGrid(app){
     app.stage.addChild(field);
 }
 
+//A single grid. Keeps track of it's position, draws itself, and changes color as needed.
 class PuzzleSquare {
     constructor(x,y,square) {
         this.x = x;
         this.y = y;
-        this.filled = false;
+        this.filled = 0;
         this.box = square
+        this.box.tint = theme.emptyColor;
     }
-    filled = false;
+    isFilled(){return this.filled === 1};
+    filled = 0;//todo: replace with Enum when we switch to typescript.
     flip()
     {
-        this.setFilled(!this.filled);
+        if(this.isFilled())
+        {
+           this.setFilled(0);
+        }else{
+            this.setFilled(1);
+        }
     }
     setFilled(f)
     {
         this.filled = f;
-        this.box.tint = this.filled ? theme.filledColor : theme.emptyColor;
+        this.box.tint = this.filled === 1 ? theme.filledColor : theme.emptyColor;
+        //todo: draw an x?
         puzzle.changedThisTick = true;
     }
 }
+
+//save/load
+//serialize/deserialize
 
 //Utility functions
 function gridToWorldCoordinates(x,y)
