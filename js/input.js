@@ -24,7 +24,9 @@ class Input  {
     tick()
     {
         keyboard.tick();
-        this.checkKeyboard();
+        if(this.inputMode === 'keyboard'){
+            this.checkKeyboard();
+        }
 
         //mouse input
         if(this.inputMode === 'mouse'){
@@ -48,15 +50,21 @@ class Input  {
                 this.cursorGridCoords = this.mouseGridCoords;
             }
         }
+        //after input checks
+
+
         //update cursor
         this.cursorWorldCoords = gridToWorldCoordinates(this.cursorGridCoords.x,this.cursorGridCoords.y);
         this.cursorSprite.x = this.cursorWorldCoords.x;
         this.cursorSprite.y = this.cursorWorldCoords.y;
+
         //if mouse press, switch to mouse mode...
+            //handled in pointer events.
+
         //if keyboard press, switch to keyboard mode
         if(this.inputMode !== 'keyboard' && this.checkSwitchToKeyboardMode())
         {
-            console.log("switch to keyboard mode");
+            console.log("switch to keyboard input");
             this.inputMode = 'keyboard';
         }
     }
@@ -71,15 +79,28 @@ class Input  {
         this.cursorSprite.roundPixels = true;
         stage.addChild(this.cursorSprite);
     }
-    onPointerDown(){
+    onSelect(){
         this.pressed = true;
         puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip();
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;
     }
+    onPointerDown()
+    {
+        if(input.inputMode === 'mouse'){
+            this.onSelect();
+        }else{
+            console.log("switch to mouse input");
+            input.inputMode = 'mouse';
+        }
+    }
     onPointerUp()
     {
-        this.pressed = false;
+        if(input.inputMode === 'mouse')
+        {
+            this.pressed = false;
+        }
     }
+
     moveCursor(dx,dy, wrap)
     {
         this.cursorGridCoords.x = this.cursorGridCoords.x+dx;
@@ -118,7 +139,7 @@ class Input  {
     {
         if(keyboard.upButton.isPressed)
         {
-                this.moveCursor(0,-1,true);
+            this.moveCursor(0,-1,true);
         }
         if(keyboard.downButton.isPressed)
         {
@@ -134,7 +155,7 @@ class Input  {
         }
         if(keyboard.flipButton.isPressed)
         {
-            this.onPointerDown();
+            this.onSelect();
         }
         this.pressed = keyboard.flipButton.isDown;
     }

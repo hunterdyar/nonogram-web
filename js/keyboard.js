@@ -67,12 +67,12 @@ class ButtonState
 const keyboard = new Keyboard();
 window.addEventListener(
         "keydown", (event) => {
-            console.log(event.code);
             keyboard.allButtons.forEach(function(b){
                 if(b.keyCode === event.code || b.altCode === event.code)
                 {
                     b.isDown = true;
                 }
+                //force an instant update so we can press and release during a frame
             });
         }, false
     );
