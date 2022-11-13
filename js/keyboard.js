@@ -1,92 +1,88 @@
-//class Keyboard {
-//    constructor() {
-//        this.keyStates = new Map();
-//    }
-//
-//    clear() {
-//        this.keyStates.clear();
-//    }
-//
-//    update() {
-//        this.keyStates.forEach((value, keyCode) => {
-//            const event = this.keyStates.get(keyCode);
-//
-//            event.alreadyPressed = true;
-//
-//            if (event.wasReleased) {
-//                this.keyStates.delete(keyCode);
-//            }
-//
-//            keyboard.events.call('down', keyCode, event);
-//            keyboard.events.call('down_' + keyCode, keyCode, event);
-//        });
-//    }
-//
-//    isKeyDown(...args) {
-//        let result = false;
-//        for(let keyCode of args) {
-//            const event = this.keyStates.get(keyCode);
-//            if (event && !event.wasReleased)
-//                result = true;
-//        }
-//
-//        return result;
-//    }
-//
-//    isKeyUp(...args) {
-//        return !this.isKeyDown(args);
-//    }
-//
-//    isKeyPressed(...args) {
-//        let result = false;
-//
-//        if (args.length == 0)
-//            return false;
-//
-//        for(let keyCode of args) {
-//            const event = this.keyStates.get(keyCode);
-//            if (event && !event.wasReleased && !event.alreadyPressed)
-//                result = true;
-//        }
-//
-//        return result;
-//    }
-//
-//    isKeyReleased(...args) {
-//        let result = false;
-//
-//        if (args.length == 0)
-//            return false;
-//
-//        for(let keyCode of args) {
-//            const event = this.keyStates.get(keyCode);
-//            if (event && event.wasReleased)
-//                result = true;
-//        }
-//
-//        return result;
-//    }
-//}
-//
-//const keyboard = new Keyboard();
-//window.addEventListener(
-//        "keydown", (event) => {
-//            if (!keyboard.keyStates.get(event.code)) {
-//                keyboard.keyStates.set(event.code, event);
-//                keyboard.events.call('pressed', event.code, event);
-//                keyboard.events.call('pressed_' + event.code, event.code, event);
-//            }
-//        }, false
-//        );
-//
-//window.addEventListener(
-//        "keyup", (event) => {
-//            event = keyboard.keyStates.get(event.code);
-//            if (event) {
-//                //keyboard.keyStates.set(event.code, event);
-//                event.wasReleased = true;
-//                keyboard.events.call('released', event.code, event);
-//                keyboard.events.call('released_' + event.code, event.code, event);
-//            }
-//        }, false
-//        );
+class Keyboard {
+    flipButton;
+    upButton;
+    downButton;
+    leftButton;
+    rightButton;
+    allButtons ;
+    constructor() {
+        this.flipButton = new ButtonState("Space");
+        this.upButton = new ButtonState("KeyW");
+        this.downButton = new ButtonState("KeyS");
+        this.leftButton = new ButtonState("KeyA");
+        this.rightButton = new ButtonState("KeyD");
+        this.allButtons = [this.flipButton,this.downButton,this.upButton,this.leftButton,this.rightButton]
+    }
+
+    tick() {
+        this.flipButton.tick();
+        this.upButton.tick();
+        this.downButton.tick();
+        this.leftButton.tick();
+        this.rightButton.tick();
+    }
+    anyKeyDown()
+    {
+        return this.flipButton.isDown || this.upButton.isDown || this.downButton.isDown || this.leftButton.isDown || this.rightButton.isDown;
+    }
+}
+
+class ButtonState
+{
+    keyCode;
+    constructor(keycode) {
+        this.keyCode = keycode;
+    }
+    prevDown = false;//internally used
+    isDown = false;
+    isPressed = false;
+    isReleased = false;
+    rebind(keycode)
+    {
+        this.keyCode = keycode;
+    }
+    //das
+    tick()
+    {
+        if(this.isDown && !this.prevDown)
+        {
+            this.isPressed = true;
+        }else{
+            this.isPressed = false;
+        }
+
+        if(!this.isDown && this.prevDown)
+        {
+            this.isReleased = true;
+        }else{
+            this.isReleased = false;
+        }
+
+        this.prevDown = this.isDown;
+    }
+}
+
+const keyboard = new Keyboard();
+window.addEventListener(
+        "keydown", (event) => {
+            keyboard.allButtons.forEach(function(b){
+                if(b.keyCode === event.code)
+                {
+                    b.isDown = true;
+                }
+            });
+        }, false
+    );
+
+window.addEventListener(
+        "keyup", (event) => {
+            keyboard.allButtons.forEach(function(b){
+                if(b.keyCode === event.code)
+                {
+                    b.isDown = false;
+                }
+            });
+        }, false
+    );
+
+export {keyboard};
