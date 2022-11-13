@@ -1,7 +1,18 @@
+
+const theme = {
+    //https://lospec.com/palette-list/insecta
+    backgroundColor: 0x7c8381,
+    emptyColor: 0xd9cbae,
+    filledColor: 0x21a1417,
+    hintTextColor: 0x1a1417,
+    errorColor: 0xaf4b3b,
+}
+
 //set width to html width?
 //tbh we should do full-page and use an iframe.
 const app = new PIXI.Application({
-    background: 0xcccccc
+    antialias: true,
+    background: theme.backgroundColor
 });
 let HTMLContainer = document.getElementById('app');
 HTMLContainer.appendChild(app.view);
@@ -13,16 +24,40 @@ app.stage.addChild(field);
 // create an array to store all the sprites
 const boxElements = [];//pile of grid sprites
 const hintElements = [];//pile of text boxes
+
 const puzzle = {
-    boxDisplaySize: 32,//display size
-    width: 10,//cols
-    height: 10,// rows
+    boxDisplaySize: 64,//display size
+    width: 5,//cols
+    height: 5,// rows
     level: [],
     rowHints: [],
     colHints: [],
     rowHintItems: [],
     colHintItems: []
 }
+const input = {
+    //mouse == cursor... for now!
+    mouseWorldCoords: {x:0,y:0},
+    mouseGridCoords: {x:0,y:0},
+    cursorGridCoords: {x:0,y:0},
+    cursorCoords: {x:0,y:0},
+    cursorSprite: null,
+    tick: function()
+    {
+        this.mouseGridCoords = worldToGridCoordinates(this.mouseWorldCoords.x,this.mouseWorldCoords.y);
+        //move cursor
+        //todo: lerp
+        this.cursorGridCoords = this.mouseGridCoords;//animation is uh... todo
+        this.cursorCoords = gridToWorldCoordinates(this.mouseGridCoords.x,this.mouseGridCoords.y);
+        this.cursorSprite.x = this.cursorCoords.x;
+        this.cursorSprite.y = this.cursorCoords.y;
+    },
+    onPointerDown: function(){
+        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip();
+        createHints();
+    }
+}
+console.log("configure input");
 //extra push. This is after centering, so 0 by default is fine.
 const padding = {x:0,y:0};
 //todo: replace with spritesheet.
@@ -42,6 +77,8 @@ for (let i = 0; i < puzzle.width; i++) {
         square.x = c.x;
         square.y = c.y;
 
+        square.tint = theme.emptyColor;
+
         boxElements.push(square);
         //level data
         puzzle.level[i][j] = {
@@ -55,7 +92,7 @@ for (let i = 0; i < puzzle.width; i++) {
             setFilled: function(f)
             {
                 this.filled = f;
-                this.box.tint = this.filled ? 0x000000 : 0xFFFFFF;
+                this.box.tint = this.filled ? theme.filledColor : theme.emptyColor;
             }
         };
 
@@ -137,7 +174,8 @@ function createHints()
             value:  value,
             text: new PIXI.Text(value.toString(),{
                 align: 'center',
-                fontSize: 32,
+                fontSize: puzzle.boxDisplaySize,
+                fill: theme.hintTextColor
             })
         };
         let offset = (puzzle.boxDisplaySize - hint.text.width)/2
@@ -175,13 +213,13 @@ app.stage.addChild(hints);
 
 
 //create cursor
-const cursor = PIXI.Sprite.from("..//img/cursor.png");
-cursor.scale = boxElements[0].scale;//match box, only want to do the math once :p
+input.cursorSprite = PIXI.Sprite.from("..//img/cursor.png");
+input.cursorSprite.scale = boxElements[0].scale;//match box, only want to do the math once :p
 let c = gridToWorldCoordinates(0,0);
-cursor.x = c.x;
-cursor.y = c.y;
-cursor.roundPixels = true;
-app.stage.addChild(cursor);
+input.cursorSprite.x = c.x;
+input.cursorSprite.y = c.y;
+input.cursorSprite.roundPixels = true;
+app.stage.addChild(input.cursorSprite);
 
 // Move container to the center
 field.x = (app.screen.width / 2) - (puzzle.boxDisplaySize*puzzle.width/2);
@@ -189,31 +227,24 @@ field.y = (app.screen.height / 2) - (puzzle.boxDisplaySize*puzzle.height/2);
 
 //High-level input things. (other input handled in object methods).
 let tick = 0;
-const mouseCoords = { x: 0, y: 0 };
-let mouseGridCoords = {x:0,y:0};
 app.stage.interactive = true;
 app.stage.hitArea = app.screen;
 app.stage.on('mousemove', (event) => {
-    mouseCoords.x = event.global.x;
-    mouseCoords.y = event.global.y;
+    input.mouseWorldCoords.x = event.global.x;
+    input.mouseWorldCoords.y = event.global.y;
 });
 
-app.stage.on('click', (event) => {
+app.stage.on('pointerdown', (event) => {
     console.log("click");
-    let c = mouseGridCoords;
+    let c = input.mouseGridCoords;
     if(c.x >= 0 && c.x <puzzle.width && c.y >= 0 && c.y < puzzle.height)
     {
-        puzzle.level[c.x][c.y].flip();
-        createHints();
+        input.onPointerDown();
     }
 });
 
 app.ticker.add(() => {
-    mouseGridCoords = worldToGridCoordinates(mouseCoords.x,mouseCoords.y);
-    //move cursor
-    let c = gridToWorldCoordinates(mouseGridCoords.x,mouseGridCoords.y);
-    cursor.x = c.x;
-    cursor.y = c.y;
+    input.tick();
     // increment the ticker
     tick += 0.1;
 });
