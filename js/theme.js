@@ -3,7 +3,9 @@ export const theme = {
     backgroundColor: 0x7c8381,
     emptyColor: 0xd9cbae,
     filledColor: 0x21a1417,
+    markedEmptyColor: 0xaf4b3b,
     hintTextColor: 0x1a1417,
     errorColor: 0xaf4b3b,
-    cursorColor: 0xc18549
+    cursorColor: 0xc18549,
+    hintInfoTextColor: 0x384d64
 }

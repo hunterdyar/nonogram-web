@@ -5,6 +5,41 @@ import {theme} from "./theme.js";
 const hintElements = [];//pile of text boxes
 const hints = new PIXI.Container();
 
+class Hint {
+    constructor() {
+        this.items = [];
+        this.isInfoHere = false;
+    }
+    items = [];//array of HintItems
+    isInfoHere = false;
+    setInfoHere(info)
+    {
+        this.isInfoHere = info;
+        for(let i = 0;i<this.items.length;i++)
+        {
+            this.items[i].text.style.fill = this.isInfoHere ? theme.hintInfoTextColor : theme.hintTextColor;
+        }
+    }
+}
+class HintItem
+{
+    x;
+    y;
+    value;
+    text;
+    constructor(x,y,value) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.text = new PIXI.Text(this.value.toString(),{
+            align: 'center',
+            fontSize: puzzle.boxDisplaySize,
+            fill: theme.hintTextColor
+        });
+    }
+
+}
+
 function initializeHints(app)
 {
     app.stage.addChild(hints);
@@ -26,7 +61,7 @@ function createHints()
         puzzle.rowHints[r][blockNumber] = 0;
 
         for(let c = 0;c<puzzle.width;c++){
-            if(puzzle.level[c][r].filled)
+            if(puzzle.solution[c][r] === 1)
             {
                 //we have a block
                 if(prevFilled)
@@ -54,7 +89,7 @@ function createHints()
         puzzle.colHints[c][blockNumber] = 0;
 
         for(let r = 0;r<puzzle.width;r++){
-            if(puzzle.level[c][r].filled)
+            if(puzzle.solution[c][r] === 1)
             {
                 //we have a block
                 if(prevFilled)
@@ -77,16 +112,7 @@ function createHints()
     function createHint(gridX,gridY,value)
     {
         let world = gridToWorldCoordinates(gridX,gridY);
-        let hint = {
-            x: gridX,
-            y: gridY,
-            value:  value,
-            text: new PIXI.Text(value.toString(),{
-                align: 'center',
-                fontSize: puzzle.boxDisplaySize,
-                fill: theme.hintTextColor
-            })
-        };
+        let hint = new HintItem(gridX,gridY,value);
         hint.text.x = world.x+((puzzle.boxDisplaySize - hint.text.width)/2);
         hint.text.y = world.y+((puzzle.boxDisplaySize - hint.text.height)/2);
         hintElements.push(hint.text);
@@ -99,11 +125,11 @@ function createHints()
     {
         let hints = puzzle.rowHints[r];
         hints.reverse();
-        puzzle.rowHintItems[r] = [];
+        puzzle.rowHintItems[r] = new Hint();
         for(let i = 0;i<puzzle.rowHints[r].length;i++)
         {
             //add to array of hintsObjects.
-            puzzle.rowHintItems[r][i] = createHint(-1-i,r,hints[i])
+            puzzle.rowHintItems[r].items[i] = createHint(-1-i,r,hints[i])
         }
     }
     //col text items
@@ -112,10 +138,10 @@ function createHints()
     {
         let hints = puzzle.colHints[c];
         hints.reverse();
-        puzzle.colHintItems[c] = [];
+        puzzle.colHintItems[c] = new Hint();
         for(let i = 0;i<puzzle.colHints[c].length;i++)
         {
-            puzzle.colHintItems[c][i] = createHint(c,-1-i,hints[i])
+            puzzle.colHintItems[c].items[i] = createHint(c,-1-i,hints[i])
         }
     }
 }

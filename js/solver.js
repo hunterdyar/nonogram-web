@@ -1,4 +1,5 @@
 import {puzzle} from "./puzzle.js";
+import {input} from "./input.js";
 
 //There is no way this line solver is going to be fast enough
 //but uh... im going to learn about threading?
@@ -37,9 +38,9 @@ function lineSolver(isRow,index)
     }
     if(isRow)
     {
-        puzzle.rowHintItems[index].infoHere = infoHere;
+        puzzle.rowHintItems[index].setInfoHere(infoHere);
     }else{
-        puzzle.colHintItems[index].infoHere = infoHere;
+        puzzle.colHintItems[index].setInfoHere(infoHere);
     }
 }
 
@@ -50,7 +51,7 @@ function solve_line(size,line,hint)
     return knownValue;
 }
 
-function getKnown(size,all)
+function getKnown(starting,size,all)
 {
     if(all == null)
     {
@@ -73,6 +74,7 @@ function getKnown(size,all)
     }
     return known;
 }
+//todo: This needs to start with our starting values and weed out ones that dont match instead of not.
 
 function getAllPossible(known,hint)
 {
@@ -112,7 +114,18 @@ function getAllPossible(known,hint)
             {
                 getAllLinesRecursive(h+1,l);
             }else{
-                lines.push(l);
+                let addLine = true;
+                for(let i = 0;i<known.length;i++){
+                    //if we say we know something, only add solutions where that matches.
+                    //ie: ignore solutions where there is any spot where that doesnt match.
+                    if(known[i] !== 0 && l[i] !== !known[i]){
+                        addLine = false;
+                        break;
+                    }
+                }
+                if(addLine){
+                    lines.push(l);
+                }
             }
         }
 

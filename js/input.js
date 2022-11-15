@@ -20,6 +20,7 @@ class Input  {
     mouseGridCoords = {x:0,y:0};
     cursorGridCoords = {x:0,y:0};
     cursorWorldCoords = {x:0,y:0};
+    lastChanged = {x:0,y:0}
     //functions
     tick()
     {
@@ -81,7 +82,7 @@ class Input  {
     }
     onSelect(){
         this.pressed = true;
-        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip();
+        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].cycle();//.fip();
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;
     }
     onPointerDown()

@@ -1,11 +1,14 @@
 import {theme} from "./theme.js";
+import {createHints} from "./hints.js";
+import {input} from "./input.js";
 
 //make a class? it is kind of just data.
 const puzzle = {
     boxDisplaySize: 64,//display size
     width: 5,//cols
     height: 5,// rows
-    level: [],
+    soution: [],//given
+    level: [],//user input
     rowHints: [],
     colHints: [],
     rowHintItems: [],
@@ -40,12 +43,26 @@ class PuzzleSquare {
             this.setFilled(1);
         }
     }
+    cycle()
+    {
+        if(this.filled === 0)
+        {
+            this.setFilled(1);
+        }else if(this.filled === 1)
+        {
+            this.setFilled(-1);
+        }else{
+            this.setFilled(0);
+        }
+    }
     setFilled(f)
     {
         this.filled = f;
         this.box.tint = this.filled === 1 ? theme.filledColor : theme.emptyColor;
+        this.box.tint = this.filled === -1 ? theme.markedEmptyColor : this.box.tint;
         //todo: draw an x?
         puzzle.changedThisTick = true;
+        input.lastChanged = {x:this.x,y:this.y};
     }
 }
 
@@ -65,8 +82,6 @@ function initializeGrid(app){
             square.x = c.x;
             square.y = c.y;
 
-            square.tint = theme.emptyColor;
-
             boxElements.push(square);
             puzzle.level[i][j] = new PuzzleSquare(i,j,square);
             field.addChild(square);
@@ -79,6 +94,18 @@ function initializeGrid(app){
     app.stage.addChild(field);
 }
 
+function createPuzzle()
+{
+    puzzle.solution = [];
+    puzzle.solution.push([1,0,1,1,1]);
+    puzzle.solution.push([1,1,1,1,1]);
+    puzzle.solution.push([1,0,0,1,1]);
+    puzzle.solution.push([1,0,0,0,1]);
+    puzzle.solution.push([1,0,1,1,0]);
+    //todo load data
+    createHints();
+
+}
 //save/load
 //serialize/deserialize
 
@@ -96,4 +123,4 @@ function isCoordInBounds(c)
     return c.x >= 0 && c.x < puzzle.width && c.y >= 0 && c.y< puzzle.height;
 }
 
-export {puzzle, field, initializeGrid,gridToWorldCoordinates,worldToGridCoordinates, isCoordInBounds};
+export {puzzle, field, initializeGrid,createPuzzle,gridToWorldCoordinates,worldToGridCoordinates, isCoordInBounds};

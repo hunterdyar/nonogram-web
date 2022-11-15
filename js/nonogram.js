@@ -1,6 +1,6 @@
 import {input,initializeCursor} from "./input.js";
 import {theme} from "./theme.js";
-import {puzzle, isCoordInBounds, initializeGrid} from "./puzzle.js";
+import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js";
 import {createHints, initializeHints} from "./hints.js";
 import {lineSolver} from "./solver.js";
 //set width to html width?
@@ -19,6 +19,9 @@ initializeGrid(app);
 initializeHints(app);
 //Init cursor
 initializeCursor(app);
+
+
+createPuzzle();
 
 //Reacting to events
 let tick = 0;
@@ -41,17 +44,26 @@ app.stage.on('pointerup', (event) => {
         input.onPointerUp();
 });
 
+const slowSolve = {
+    col: 0,
+    row: 0,
+}
 //Top level Game Loop
 app.ticker.add(() => {
     input.tick();
 
     if(puzzle.changedThisTick)
     {
-        //draw mode
-        createHints();
-        //Check validation/solver
-        lineSolver(true,0);
+        lineSolver(false,2);
     }
+    //Check validation/solver
+//    lineSolver(true,slowSolve.row);
+//    lineSolver(false,slowSolve.col);
+//    slowSolve.col ++;
+//    slowSolve.row ++;
+//    slowSolve.col = slowSolve.col%puzzle.width;
+//    slowSolve.row = slowSolve.row%puzzle.height;
+
     //reset
     puzzle.changedThisTick = false;
     // increment the ticker
