@@ -42,7 +42,7 @@ function createHints()
             }
         }
         puzzle.rowHints[r].shift();
-        puzzle.rowHints[r].reverse();
+//        puzzle.rowHints[r].reverse();
     }
     //recalc COLS
     puzzle.colHints = [];
@@ -70,7 +70,7 @@ function createHints()
             }
         }
         puzzle.colHints[c].shift();
-        puzzle.colHints[c].reverse();
+        //puzzle.colHints[c].reverse();
     }
 
     //DRAW the hints
@@ -97,21 +97,25 @@ function createHints()
     puzzle.rowHintItems = []
     for(let r = 0;r<puzzle.height;r++)
     {
+        let hints = puzzle.rowHints[r];
+        hints.reverse();
         puzzle.rowHintItems[r] = [];
         for(let i = 0;i<puzzle.rowHints[r].length;i++)
         {
             //add to array of hintsObjects.
-            puzzle.rowHintItems[r][i] = createHint(-1-i,r,puzzle.rowHints[r][i])
+            puzzle.rowHintItems[r][i] = createHint(-1-i,r,hints[i])
         }
     }
     //col text items
     puzzle.colHintItems = [];
     for(let c = 0;c<puzzle.width;c++)
     {
+        let hints = puzzle.colHints[c];
+        hints.reverse();
         puzzle.colHintItems[c] = [];
         for(let i = 0;i<puzzle.colHints[c].length;i++)
         {
-            puzzle.colHintItems[c][i] = createHint(c,-1-i,puzzle.colHints[c][i])
+            puzzle.colHintItems[c][i] = createHint(c,-1-i,hints[i])
         }
     }
 }

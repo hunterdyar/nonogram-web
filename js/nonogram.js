@@ -2,7 +2,7 @@ import {input,initializeCursor} from "./input.js";
 import {theme} from "./theme.js";
 import {puzzle, isCoordInBounds, initializeGrid} from "./puzzle.js";
 import {createHints, initializeHints} from "./hints.js";
-
+import {lineSolver} from "./solver.js";
 //set width to html width?
 //tbh we should do full-page and use an iframe.
 const app = new PIXI.Application({
@@ -50,6 +50,7 @@ app.ticker.add(() => {
         //draw mode
         createHints();
         //Check validation/solver
+        lineSolver(true,0);
     }
     //reset
     puzzle.changedThisTick = false;

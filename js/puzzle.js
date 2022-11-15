@@ -12,10 +12,42 @@ const puzzle = {
     colHintItems: [],
     changedThisTick: false,
 }
+
 const padding = {x:0,y:0};
 const field = new PIXI.Container();
 const white = PIXI.Texture.from("../img/white.png");
 const boxElements = [];//pile of grid sprites
+
+
+//A single grid. Keeps track of it's position, draws itself, and changes color as needed.
+class PuzzleSquare {
+    constructor(x,y,square) {
+        this.x = x;
+        this.y = y;
+        this.filled = 0;
+        this.box = square
+        this.box.tint = theme.emptyColor;
+    }
+    isFilled(){return this.filled === 1};
+    filled = 0;//todo: replace with Enum when we switch to typescript.
+    solverFilled = 0;
+    flip()
+    {
+        if(this.isFilled())
+        {
+            this.setFilled(0);
+        }else{
+            this.setFilled(1);
+        }
+    }
+    setFilled(f)
+    {
+        this.filled = f;
+        this.box.tint = this.filled === 1 ? theme.filledColor : theme.emptyColor;
+        //todo: draw an x?
+        puzzle.changedThisTick = true;
+    }
+}
 
 function initializeGrid(app){
     //initialize level + grid
@@ -45,35 +77,6 @@ function initializeGrid(app){
     field.x = (app.screen.width / 2) - (puzzle.boxDisplaySize*puzzle.width/2);
     field.y = (app.screen.height / 2) - (puzzle.boxDisplaySize*puzzle.height/2);
     app.stage.addChild(field);
-}
-
-//A single grid. Keeps track of it's position, draws itself, and changes color as needed.
-class PuzzleSquare {
-    constructor(x,y,square) {
-        this.x = x;
-        this.y = y;
-        this.filled = 0;
-        this.box = square
-        this.box.tint = theme.emptyColor;
-    }
-    isFilled(){return this.filled === 1};
-    filled = 0;//todo: replace with Enum when we switch to typescript.
-    flip()
-    {
-        if(this.isFilled())
-        {
-           this.setFilled(0);
-        }else{
-            this.setFilled(1);
-        }
-    }
-    setFilled(f)
-    {
-        this.filled = f;
-        this.box.tint = this.filled === 1 ? theme.filledColor : theme.emptyColor;
-        //todo: draw an x?
-        puzzle.changedThisTick = true;
-    }
 }
 
 //save/load
