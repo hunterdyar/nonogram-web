@@ -45,6 +45,7 @@ app.stage.on('pointerup', (event) => {
 });
 
 const slowSolve = {
+    allChecked: false,
     col: 0,
     row: 0,
 }
@@ -54,15 +55,25 @@ app.ticker.add(() => {
 
     if(puzzle.changedThisTick)
     {
-        lineSolver(false,2);
+        slowSolve.allChecked = false;
+        slowSolve.row = 0;
+        slowSolve.col = 0;
     }
-    //Check validation/solver
-//    lineSolver(true,slowSolve.row);
-//    lineSolver(false,slowSolve.col);
-//    slowSolve.col ++;
-//    slowSolve.row ++;
-//    slowSolve.col = slowSolve.col%puzzle.width;
-//    slowSolve.row = slowSolve.row%puzzle.height;
+//    Check validation/solver
+    if(!slowSolve.allChecked){
+        if(slowSolve.col < puzzle.width){
+            lineSolver(true,slowSolve.col);
+            slowSolve.col ++;
+        }else{
+            if(slowSolve.row < puzzle.height){
+                lineSolver(false,slowSolve.row);
+                slowSolve.row ++;
+            }else{
+                slowSolve.allChecked = true;
+            }
+        }
+
+    }
 
     //reset
     puzzle.changedThisTick = false;

@@ -24,7 +24,6 @@ function lineSolver(isRow,index)
             line[i] = puzzle.level[index][i].filled;
         }
     }
-    hint.reverse();
     let size = isRow ? puzzle.width : puzzle.height;
     let solved = solve_line(size,line, hint);
     let infoHere = false;
@@ -51,7 +50,7 @@ function solve_line(size,line,hint)
     return knownValue;
 }
 
-function getKnown(starting,size,all)
+function getKnown(size,all)
 {
     if(all == null)
     {
@@ -60,6 +59,7 @@ function getKnown(starting,size,all)
     if(all.length === 0){
         return new Array(size).fill(-1)
     }
+
     let known = all[0].slice(0);
     for(let i = 0;i<size;i++)//col
     {
@@ -104,23 +104,28 @@ function getAllPossible(known,hint)
 
     //get all hint options.
     let lines = [];
-    function getAllLinesRecursive(h,s)
+    function getAllLinesRecursive(h,s,left)
     {
-        for(let x = leftMosts[h];x<=rightMosts[h];x++)
+        let start = leftMosts[h] > left ? leftMosts[h] : left;//get max.
+        for(let x = start;x<=rightMosts[h];x++)
         {
             let l = s.slice(0);
             l = setLine(l,x,hint[h]);
+            let rightEdge = x+hint[h]+1;
             if(h<hint.length-1)
             {
-                getAllLinesRecursive(h+1,l);
+                getAllLinesRecursive(h+1,l,rightEdge);
             }else{
                 let addLine = true;
                 for(let i = 0;i<known.length;i++){
                     //if we say we know something, only add solutions where that matches.
                     //ie: ignore solutions where there is any spot where that doesnt match.
-                    if(known[i] !== 0 && l[i] !== !known[i]){
-                        addLine = false;
-                        break;
+                    if(known[i] !== 0)
+                    {
+                        if(l[i] !== known[i]){
+                            addLine = false;
+                            break;
+                        }
                     }
                 }
                 if(addLine){
@@ -132,7 +137,7 @@ function getAllPossible(known,hint)
     }
 
     let empty = getEmpty(known.length);
-    getAllLinesRecursive(0,empty)
+    getAllLinesRecursive(0,empty, leftMosts[0])
     return lines;
 }
 

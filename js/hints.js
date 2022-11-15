@@ -105,11 +105,11 @@ function createHints()
             }
         }
         puzzle.colHints[c].shift();
-        //puzzle.colHints[c].reverse();
+//        puzzle.colHints[c].reverse();
     }
 
     //DRAW the hints
-    function createHint(gridX,gridY,value)
+    function createHintItem(gridX,gridY,value)
     {
         let world = gridToWorldCoordinates(gridX,gridY);
         let hint = new HintItem(gridX,gridY,value);
@@ -123,25 +123,26 @@ function createHints()
     puzzle.rowHintItems = []
     for(let r = 0;r<puzzle.height;r++)
     {
-        let hints = puzzle.rowHints[r];
+        let hints = puzzle.rowHints[r].slice(0);
         hints.reverse();
         puzzle.rowHintItems[r] = new Hint();
         for(let i = 0;i<puzzle.rowHints[r].length;i++)
         {
             //add to array of hintsObjects.
-            puzzle.rowHintItems[r].items[i] = createHint(-1-i,r,hints[i])
+            puzzle.rowHintItems[r].items[i] = createHintItem(-1-i,r,hints[i])
         }
     }
     //col text items
     puzzle.colHintItems = [];
     for(let c = 0;c<puzzle.width;c++)
     {
-        let hints = puzzle.colHints[c];
+        let hints = puzzle.colHints[c].slice(0);
         hints.reverse();
         puzzle.colHintItems[c] = new Hint();
+        let length = puzzle.colHints[c].length;
         for(let i = 0;i<puzzle.colHints[c].length;i++)
         {
-            puzzle.colHintItems[c].items[i] = createHint(c,-1-i,hints[i])
+            puzzle.colHintItems[c].items[i] = createHintItem(c,-1-i,hints[i])
         }
     }
 }
