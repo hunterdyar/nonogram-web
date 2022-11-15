@@ -1,47 +1,18 @@
-import {puzzle} from "./puzzle.js";
-import {input} from "./input.js";
-
-//There is no way this line solver is going to be fast enough
-//but uh... im going to learn about threading?
-//the trick is that 1) I will start cacheing knowns for various inputs and outputs
-//i may also cache allPossibles?
-function lineSolver(isRow,index)
-{
-    let hint = [];
-    let line = [];
-    if(isRow)
-    {
-        hint = puzzle.rowHints[index];
-        for(let i = 0;i<puzzle.width;i++)
-        {
-            line[i] = puzzle.level[i][index].filled;
-        }
-    }else{
-        //col
-        hint = puzzle.colHints[index];
-        for(let i = 0;i<puzzle.height;i++)
-        {
-            line[i] = puzzle.level[index][i].filled;
-        }
+//Recieve events and copied data from solver
+onmessage = function(e) {
+    const result = {
+        //    worker.postMessage([size,line,hint,isRow,index]);
+        solved: null,
+        size: e.data[0],
+        line: e.data[1],
+        isRow: e.data[3],
+        index: e.data[4],
     }
-    let size = isRow ? puzzle.width : puzzle.height;
-    let solved = solve_line(size,line, hint);
-    let infoHere = false;
-    for(let i=0;i<size;i++)
-    {
-        if(line[i] === 0 && solved[i] !== 0)
-        {
-            infoHere = true;
-            break;
-        }
-    }
-    if(isRow)
-    {
-        puzzle.rowHintItems[index].setInfoHere(infoHere);
-    }else{
-        puzzle.colHintItems[index].setInfoHere(infoHere);
-    }
+    result.solved = solve_line(result.size,result.line,e.data[2]);
+    console.log('Solved: '+ (result.isRow ? ("row-"+result.index):("col-"+result.index)));
+    postMessage(result);
 }
+
 
 function solve_line(size,line,hint)
 {
@@ -62,16 +33,16 @@ function getKnown(size,all)
 
     let known = all[0].slice(0);
     for(let i = 0;i<size;i++)//col
-    {
-        for(let a = 1;a<all.length;a++)//row
         {
-            if(all[a][i] !== known[i])
-            {
-                known[i] = 0;
-                break;//break 1
-            }
+            for(let a = 1;a<all.length;a++)//row
+                {
+                    if(all[a][i] !== known[i])
+                    {
+                        known[i] = 0;
+                        break;//break 1
+                    }
+                }
         }
-    }
     return known;
 }
 //todo: This needs to start with our starting values and weed out ones that dont match instead of not.
@@ -162,5 +133,3 @@ function getEmpty(size)
 {
     return new Array(size).fill(0);
 }
-
-export {lineSolver}

@@ -2,7 +2,7 @@ import {input,initializeCursor} from "./input.js";
 import {theme} from "./theme.js";
 import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js";
 import {createHints, initializeHints} from "./hints.js";
-import {lineSolver} from "./solver.js";
+import {lineSolver, solveCounts} from "./solver/solver.js";
 //set width to html width?
 //tbh we should do full-page and use an iframe.
 const app = new PIXI.Application({
@@ -44,35 +44,24 @@ app.stage.on('pointerup', (event) => {
         input.onPointerUp();
 });
 
-const slowSolve = {
-    allChecked: false,
-    col: 0,
-    row: 0,
-}
+let allChecked = false;
 //Top level Game Loop
 app.ticker.add(() => {
     input.tick();
 
     if(puzzle.changedThisTick)
     {
-        slowSolve.allChecked = false;
-        slowSolve.row = 0;
-        slowSolve.col = 0;
+        allChecked = false;
     }
-//    Check validation/solver
-    if(!slowSolve.allChecked){
-        if(slowSolve.col < puzzle.width){
-            lineSolver(true,slowSolve.col);
-            slowSolve.col ++;
-        }else{
-            if(slowSolve.row < puzzle.height){
-                lineSolver(false,slowSolve.row);
-                slowSolve.row ++;
-            }else{
-                slowSolve.allChecked = true;
-            }
+    if(!allChecked && solveCounts === 0){
+        //we need to track if we are solving or not.
+        for(let r = 0;r<puzzle.height;r++){
+            lineSolver(true,r);
         }
-
+        for(let c = 0;c<puzzle.width;c++){
+            lineSolver(false,c);
+        }
+        allChecked = true;
     }
 
     //reset
