@@ -4,9 +4,6 @@ import {input} from "./input.js";
 
 //make a class? it is kind of just data.
 const puzzle = {
-    boxDisplaySize: 64,//display size
-    lineWidth: 1,
-    strongLineWidth: 3,
     width: 5,//cols
     height: 5,// rows
     soution: [],//given
@@ -77,7 +74,7 @@ function initializeGrid(app){
             const square = PIXI.Sprite.from(white);//16x16
             // set the anchor point to the top left.
             square.anchor.set(0,0);
-            let scale = puzzle.boxDisplaySize/16;//16 = texture->width
+            let scale = theme.boxDisplaySize/16;//16 = texture->width
             square.scale.set(scale);
 
             let c = gridToWorldCoordinates(i,j);
@@ -91,8 +88,8 @@ function initializeGrid(app){
     }
 
     // Move container to the center
-    field.x = (app.screen.width / 2) - (puzzle.boxDisplaySize*puzzle.width/2);
-    field.y = (app.screen.height / 2) - (puzzle.boxDisplaySize*puzzle.height/2);
+    field.x = (app.screen.width / 2) - (theme.boxDisplaySize*puzzle.width/2);
+    field.y = (app.screen.height / 2) - (theme.boxDisplaySize*puzzle.height/2);
     app.stage.addChild(field);
 }
 
@@ -117,11 +114,11 @@ function createPuzzle()
 //Utility functions
 function gridToWorldCoordinates(x,y)
 {
-    return {x:x*puzzle.boxDisplaySize+padding.x+field.x,y:y*puzzle.boxDisplaySize+padding.y+field.y};
+    return {x:x*theme.boxDisplaySize+padding.x+field.x,y:y*theme.boxDisplaySize+padding.y+field.y};
 }
 function worldToGridCoordinates(wx,wy)
 {
-    return {x:Math.floor((wx-field.x-padding.x)/puzzle.boxDisplaySize),y:Math.floor((wy-field.y-padding.y)/puzzle.boxDisplaySize)};
+    return {x:Math.floor((wx-field.x-padding.x)/theme.boxDisplaySize),y:Math.floor((wy-field.y-padding.y)/theme.boxDisplaySize)};
 }
 function isCoordInBounds(c)
 {

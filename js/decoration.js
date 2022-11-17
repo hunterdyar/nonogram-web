@@ -6,20 +6,21 @@ const decorationContainer = new PIXI.Container();
 function initializeDecoration(app)
 {
         let decoration = new PIXI.Graphics();
-        let halfWidth = puzzle.lineWidth/puzzle.boxDisplaySize;
+        let halfWidth = theme.lineWidth/theme.boxDisplaySize;
 
         //draw outer edge.
         let tl = gridToWorldCoordinates(0,0);
         let br = gridToWorldCoordinates(puzzle.width-1,puzzle.height-1);
-        br.x += puzzle.boxDisplaySize;
-        br.y += puzzle.boxDisplaySize;
+        br.x += theme.boxDisplaySize;
+        br.y += theme.boxDisplaySize;
 
-        //borders
-        decoration.lineStyle(puzzle.strongLineWidth,theme.gridLineColor,1)
-        decoration.drawRect(tl.x-puzzle.lineWidth,tl.y,halfWidth,puzzle.boxDisplaySize*puzzle.height);
-        decoration.drawRect(br.x+puzzle.lineWidth,tl.y,halfWidth,puzzle.boxDisplaySize*puzzle.height);
-        decoration.drawRect(tl.x,tl.y-puzzle.lineWidth,puzzle.boxDisplaySize*puzzle.width,halfWidth);
-        decoration.drawRect(tl.x,br.y+puzzle.lineWidth,puzzle.boxDisplaySize*puzzle.width,halfWidth);
+        //theme
+        decoration.lineStyle(theme.strongLineWidth,theme.gridLineColor,1);
+        
+        decoration.drawRect(tl.x-theme.lineWidth,tl.y,halfWidth,theme.boxDisplaySize*puzzle.height);
+        decoration.drawRect(br.x+theme.lineWidth,tl.y,halfWidth,theme.boxDisplaySize*puzzle.height);
+        decoration.drawRect(tl.x,tl.y-theme.lineWidth,theme.boxDisplaySize*puzzle.width,halfWidth);
+        decoration.drawRect(tl.x,br.y+theme.lineWidth,theme.boxDisplaySize*puzzle.width,halfWidth);
 
         //Draw inner lines
         for (let i = 1; i < puzzle.width; i++) {

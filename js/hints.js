@@ -33,7 +33,7 @@ class HintItem
         this.value = value;
         this.text = new PIXI.Text(this.value.toString(),{
             align: 'center',
-            fontSize: puzzle.boxDisplaySize,
+            fontSize: theme.boxDisplaySize,
             fill: theme.hintTextColor
         });
     }
@@ -117,8 +117,8 @@ function createHints()
     {
         let world = gridToWorldCoordinates(gridX,gridY);
         let hint = new HintItem(gridX,gridY,value);
-        hint.text.x = world.x+((puzzle.boxDisplaySize - hint.text.width)/2) - offset.x;
-        hint.text.y = world.y+((puzzle.boxDisplaySize - hint.text.height)/2) - offset.y;
+        hint.text.x = world.x+((theme.boxDisplaySize - hint.text.width)/2) - offset.x;
+        hint.text.y = world.y+((theme.boxDisplaySize - hint.text.height)/2) - offset.y;
         hintElements.push(hint.text);
         hints.addChild(hint.text);
         return hint;
@@ -130,7 +130,7 @@ function createHints()
         let hints = puzzle.rowHints[r].slice(0);
         hints.reverse();
         puzzle.rowHintItems[r] = new Hint();
-        offset.x = puzzle.strongLineWidth;
+        offset.x = theme.strongLineWidth;
         offset.y = 0;
         for(let i = 0;i<puzzle.rowHints[r].length;i++)
         {
@@ -147,7 +147,7 @@ function createHints()
         puzzle.colHintItems[c] = new Hint();
         let length = puzzle.colHints[c].length;
         offset.x = 0;
-        offset.y = puzzle.strongLineWidth;
+        offset.y = theme.strongLineWidth;
         for(let i = 0;i<puzzle.colHints[c].length;i++)
         {
             puzzle.colHintItems[c].items[i] = createHintItem(c,-1-i,hints[i])

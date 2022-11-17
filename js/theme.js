@@ -1,4 +1,7 @@
 export const theme = {
+    boxDisplaySize: 64,//display size
+    lineWidth: 1,
+    strongLineWidth: 3,
     //https://lospec.com/palette-list/insecta
     backgroundColor: 0x7c8381,
     emptyColor: 0xd9cbae,

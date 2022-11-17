@@ -72,7 +72,7 @@ class Input  {
 
     createCursor(stage){
         this.cursorSprite = PIXI.Sprite.from("..//img/cursor.png");
-        this.cursorSprite.scale.set(puzzle.boxDisplaySize/this.cursorSpriteSize);//match box, only want to do the math once :p
+        this.cursorSprite.scale.set(theme.boxDisplaySize/this.cursorSpriteSize);//match box, only want to do the math once :p
         this.cursorSprite.tint = theme.cursorColor;
         let c = gridToWorldCoordinates(0,0);
         this.cursorSprite.x = c.x;
