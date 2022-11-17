@@ -10,14 +10,30 @@ class Hint {
         this.items = [];
         this.isInfoHere = false;
     }
+    isComplete = false;
+    isCorrect = false;
     items = [];//array of HintItems
     isInfoHere = false;
+
+    setCompleteCorrect(complete,correct)
+    {
+        this.isComplete = complete;
+        this.isCorrect = correct;
+        for(let i = 0;i<this.items.length;i++)
+        {
+            this.items[i].text.alpha = (this.isComplete || this.isCorrect) ? theme.completeFade : 1;
+        }
+    }
     setInfoHere(info)
     {
         this.isInfoHere = info;
         for(let i = 0;i<this.items.length;i++)
         {
-            this.items[i].text.style.fill = this.isInfoHere ? theme.hintInfoTextColor : theme.hintTextColor;
+            //hint system kind of bugs out when the hint is correct. it's like "oh youre good"
+            //but we aren't good: there's info!
+            //i need to fix the solver for that, but we're doing correction checks anyway so this is fine?
+            let info = this.isInfoHere || (this.isCorrect && !this.isComplete);
+            this.items[i].text.style.fill = info ? theme.hintInfoTextColor : theme.hintTextColor;
         }
     }
 }

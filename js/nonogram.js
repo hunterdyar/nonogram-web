@@ -4,6 +4,7 @@ import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js
 import {createHints, initializeHints} from "./hints.js";
 import {lineSolver, solveCounts} from "./solver/solver.js";
 import {initializeDecoration} from "./decoration.js ";
+import {validateLine} from "./validator.js";
 //set width to html width?
 //tbh we should do full-page and use an iframe.
 const app = new PIXI.Application({
@@ -23,7 +24,6 @@ initializeDecoration(app);
 
 //Init cursor
 initializeCursor(app);
-
 
 createPuzzle();
 
@@ -59,6 +59,8 @@ app.ticker.add(() => {
         //instantly solve the one we expect to have changed.
         lineSolver(true,input.lastChanged.y);
         lineSolver(false,input.lastChanged.x);
+        validateLine(true,input.lastChanged.y);
+        validateLine(false,input.lastChanged.x);
 
     }
     //I intended to do two optimizations. The first was to cancel previous 'threads' and restart on changes, the second was hash map.
@@ -70,9 +72,11 @@ app.ticker.add(() => {
         //we need to track if we are solving or not.
         for(let r = 0;r<puzzle.height;r++){
             lineSolver(true,r);
+            validateLine(true,r)
         }
         for(let c = 0;c<puzzle.width;c++){
             lineSolver(false,c);
+            validateLine(false,c);
         }
         allChecked = true;
     }
