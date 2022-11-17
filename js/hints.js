@@ -47,6 +47,10 @@ function initializeHints(app)
 
 function createHints()
 {
+    let offset = {
+        x: 0,
+        y: 0
+    };
     //clear existing hints
     hints.removeChildren();
     hintElements.splice(0,hintElements.length);//clear hintElements
@@ -113,8 +117,8 @@ function createHints()
     {
         let world = gridToWorldCoordinates(gridX,gridY);
         let hint = new HintItem(gridX,gridY,value);
-        hint.text.x = world.x+((puzzle.boxDisplaySize - hint.text.width)/2);
-        hint.text.y = world.y+((puzzle.boxDisplaySize - hint.text.height)/2);
+        hint.text.x = world.x+((puzzle.boxDisplaySize - hint.text.width)/2) - offset.x;
+        hint.text.y = world.y+((puzzle.boxDisplaySize - hint.text.height)/2) - offset.y;
         hintElements.push(hint.text);
         hints.addChild(hint.text);
         return hint;
@@ -126,6 +130,8 @@ function createHints()
         let hints = puzzle.rowHints[r].slice(0);
         hints.reverse();
         puzzle.rowHintItems[r] = new Hint();
+        offset.x = puzzle.strongLineWidth;
+        offset.y = 0;
         for(let i = 0;i<puzzle.rowHints[r].length;i++)
         {
             //add to array of hintsObjects.
@@ -140,6 +146,8 @@ function createHints()
         hints.reverse();
         puzzle.colHintItems[c] = new Hint();
         let length = puzzle.colHints[c].length;
+        offset.x = 0;
+        offset.y = puzzle.strongLineWidth;
         for(let i = 0;i<puzzle.colHints[c].length;i++)
         {
             puzzle.colHintItems[c].items[i] = createHintItem(c,-1-i,hints[i])

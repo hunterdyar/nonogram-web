@@ -3,6 +3,7 @@ import {theme} from "./theme.js";
 import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js";
 import {createHints, initializeHints} from "./hints.js";
 import {lineSolver, solveCounts} from "./solver/solver.js";
+import {initializeDecoration} from "./decoration.js ";
 //set width to html width?
 //tbh we should do full-page and use an iframe.
 const app = new PIXI.Application({
@@ -17,6 +18,9 @@ HTMLContainer.appendChild(app.view);
 initializeGrid(app);
 //Init hints.
 initializeHints(app);
+
+initializeDecoration(app);
+
 //Init cursor
 initializeCursor(app);
 
