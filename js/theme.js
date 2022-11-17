@@ -7,5 +7,6 @@ export const theme = {
     hintTextColor: 0x1a1417,
     errorColor: 0xaf4b3b,
     cursorColor: 0xc18549,
-    hintInfoTextColor: 0x384d64
+    hintInfoTextColor: 0x384d64,
+    gridLineColor: 0x384d64
 }

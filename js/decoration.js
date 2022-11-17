@@ -1,4 +1,5 @@
 import {gridToWorldCoordinates, puzzle} from "./puzzle.js";
+import {theme} from "./theme.js";
 
 const decorationContainer = new PIXI.Container();
 
@@ -14,7 +15,7 @@ function initializeDecoration(app)
         br.y += puzzle.boxDisplaySize;
 
         //borders
-        decoration.lineStyle(puzzle.strongLineWidth,0x000000,1)
+        decoration.lineStyle(puzzle.strongLineWidth,theme.gridLineColor,1)
         decoration.drawRect(tl.x-puzzle.lineWidth,tl.y,halfWidth,puzzle.boxDisplaySize*puzzle.height);
         decoration.drawRect(br.x+puzzle.lineWidth,tl.y,halfWidth,puzzle.boxDisplaySize*puzzle.height);
         decoration.drawRect(tl.x,tl.y-puzzle.lineWidth,puzzle.boxDisplaySize*puzzle.width,halfWidth);
@@ -23,7 +24,7 @@ function initializeDecoration(app)
         //Draw inner lines
         for (let i = 1; i < puzzle.width; i++) {
             let c = gridToWorldCoordinates(i,0);
-            decoration.lineStyle(puzzle.lineWidth,0x000000,1)
+            decoration.lineStyle(puzzle.lineWidth,theme.gridLineColor,1)
             decoration.drawRect(c.x-halfWidth,c.y,halfWidth,puzzle.boxDisplaySize*puzzle.height);
         }
         for(let j = 1; j < puzzle.height; j++) {
