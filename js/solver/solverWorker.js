@@ -5,11 +5,12 @@ onmessage = function(e) {
         solved: null,
         size: e.data[0],
         line: e.data[1],
+        hint: e.data[2],
         isRow: e.data[3],
         index: e.data[4],
     }
     result.solved = solve_line(result.size,result.line,e.data[2]);
-    console.log('Solved: '+ (result.isRow ? ("row-"+result.index):("col-"+result.index)));
+//    console.log('Solved: '+ (result.isRow ? ("row-"+result.index):("col-"+result.index)));
     postMessage(result);
 }
 

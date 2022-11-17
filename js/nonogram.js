@@ -52,7 +52,16 @@ app.ticker.add(() => {
     if(puzzle.changedThisTick)
     {
         allChecked = false;
+        //instantly solve the one we expect to have changed.
+        lineSolver(true,input.lastChanged.y);
+        lineSolver(false,input.lastChanged.x);
+
     }
+    //I intended to do two optimizations. The first was to cancel previous 'threads' and restart on changes, the second was hash map.
+    //hash maps worked so well for my 30x30 that im just gonna call it good enough for now. I can optimize later.
+
+    //then, do the rest. THis is mostly not needed, but we can change more than one input per tick.
+    //plus, it will be fast because repetative work will just be polling a hashmap. That's O(n) not O(n^2) like the solve.
     if(!allChecked && solveCounts === 0){
         //we need to track if we are solving or not.
         for(let r = 0;r<puzzle.height;r++){

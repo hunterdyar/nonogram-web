@@ -5,12 +5,12 @@ import {puzzle} from "../puzzle.js";
 //the trick is that 1) I will start cacheing knowns for various inputs and outputs
 //i may also cache allPossibles?
 export let solveCounts =0;
-
+const solvedMap = {};
 const worker = new Worker("./js/solver/solverWorker.js");
 worker.onmessage = function(e) {
     let solved = e.data.solved;
     solveCounts--;
-    console.log('Message received from worker. Active:'+solveCounts);
+//    console.log('Message received from worker. Active:'+solveCounts);
     let infoHere = false;
     for(let i=0;i<e.data.size;i++)
     {
@@ -20,12 +20,25 @@ worker.onmessage = function(e) {
             break;
         }
     }
-    if(e.data.isRow)
+    solvedMap[key(e.data.hint,e.data.line)] = infoHere;
+    setInfoStatus(e.data.isRow,e.data.index,infoHere);
+}
+
+function setInfoStatus(isRow,index,infoHere)
+{
+    if(isRow)
     {
-        puzzle.rowHintItems[e.data.index].setInfoHere(infoHere);
+        puzzle.rowHintItems[index].setInfoHere(infoHere);
     }else{
-        puzzle.colHintItems[e.data.index].setInfoHere(infoHere);
+        puzzle.colHintItems[index].setInfoHere(infoHere);
     }
+}
+
+//hash for solvemap. browsers use a real hash in implenentation i think.
+function key(hint,line)
+{
+    //eh?
+    return hint.toString()+line.toString();
 }
 
 function lineSolver(isRow,index)
@@ -60,9 +73,17 @@ function lineSolver(isRow,index)
         }
     }
     let size = isRow ? puzzle.width : puzzle.height;
+
+    let map = solvedMap[key(hint,line)]
+    if(map === true || map === false)
+    {
+        setInfoStatus(isRow,index,map);
+    }else{
+        worker.postMessage([size,line,hint,isRow,index]);
+        solveCounts++;
+    }
+
 //    let solved = solve_line(size,line, hint);
-    worker.postMessage([size,line,hint,isRow,index]);
-    solveCounts++;
 }
 
 
