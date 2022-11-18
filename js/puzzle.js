@@ -31,6 +31,7 @@ class PuzzleSquare {
         this.box.tint = theme.emptyColor;
     }
     isFilled(){return this.filled === 1};
+    isMarkEmpty(){return this.filled === -1}
     filled = 0;//todo: replace with Enum when we switch to typescript.
     solverFilled = 0;
     flip()
@@ -40,6 +41,15 @@ class PuzzleSquare {
             this.setFilled(0);
         }else{
             this.setFilled(1);
+        }
+    }
+    flipEmpty()
+    {
+        if(this.isMarkEmpty())
+        {
+            this.setFilled(0);
+        }else{
+            this.setFilled(-1);
         }
     }
     cycle()

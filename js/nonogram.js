@@ -32,20 +32,34 @@ let tick = 0;
 app.stage.interactive = true;
 app.stage.hitArea = app.screen;
 //pointer combines mouse and tap/touch
+//or mousemove
 app.stage.on('pointermove', (event) => {
     input.mouseWorldCoords.x = event.global.x;
     input.mouseWorldCoords.y = event.global.y;
 });
 
-app.stage.on('pointerdown', (event) => {
+app.stage.on('mousedown', (event) => {
     let c = input.mouseGridCoords;
     if(isCoordInBounds(c))
     {
         input.onPointerDown();
     }
 });
+app.stage.on('rightdown', function(event) {
+    event.preventDefault();
+    let c = input.mouseGridCoords;
+    if(isCoordInBounds(c))
+    {
+        input.onAltPointerDown();
+    }
+    return false;
+    }, false);
 app.stage.on('pointerup', (event) => {
         input.onPointerUp();
+});
+
+document.body.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
 });
 
 let allChecked = false;

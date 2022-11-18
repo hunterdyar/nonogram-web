@@ -82,13 +82,31 @@ class Input  {
     }
     onSelect(){
         this.pressed = true;
-        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].cycle();//.fip();
+        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip()
+        this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;//1
+    }
+    onAlt()
+    {
+        console.log("on alt");
+        this.pressed = true;
+        puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flipEmpty();
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;
     }
     onPointerDown()
     {
+        console.log("on pointer down");
         if(input.inputMode === 'mouse'){
             this.onSelect();
+        }else{
+            console.log("switch to mouse input");
+            input.inputMode = 'mouse';
+        }
+    }
+    onAltPointerDown()
+    {
+        //todo: prevent right click from doing anything when left click is held
+        if(input.inputMode === 'mouse'){
+            this.onAlt();
         }else{
             console.log("switch to mouse input");
             input.inputMode = 'mouse';
