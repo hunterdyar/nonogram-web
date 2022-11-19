@@ -94,7 +94,10 @@ function getAllPossible(known,hint)
                     //ie: ignore solutions where there is any spot where that doesnt match.
                     if(known[i] !== 0)
                     {
-                        if(l[i] !== known[i]){
+                        //it could be that known_i is -1 and l_i is 0, still should add.
+                        //todo: this is a bugfix add, but i need to think it through
+                        if(l[i] !== known[i] && !(l[i]===0 && known[i]===-1))
+                        {
                             addLine = false;
                             break;
                         }
