@@ -10,6 +10,7 @@ function initializeCursor(app)
 class Input  {
     //mouse == cursor... for now!
     //config
+    inputActive = true;
     inputMode = 'mouse';
     cursorSpriteSize = 64;//can we calculate this?
     cursorSprite = null;
@@ -81,12 +82,15 @@ class Input  {
         stage.addChild(this.cursorSprite);
     }
     onSelect(){
+        if(!this.inputActive){return;}
         this.pressed = true;
         puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip()
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;//1
     }
     onAlt()
     {
+        if(!this.inputActive){return;}
+
         this.pressed = true;
         puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flipEmpty();
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;

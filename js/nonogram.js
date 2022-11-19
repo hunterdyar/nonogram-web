@@ -1,7 +1,7 @@
 import {input,initializeCursor} from "./input.js";
 import {theme} from "./theme.js";
 import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js";
-import {createHints, initializeHints} from "./hints.js";
+import {initializeHints, setHintsVisible} from "./hints.js";
 import {lineSolver, solveCounts} from "./solver/solver.js";
 import {initializeDecoration} from "./decoration.js ";
 import {validateLine} from "./validator.js";
@@ -62,11 +62,12 @@ document.getElementById("app").addEventListener('contextmenu', (e) => {
 });
 
 let allChecked = false;
+let solved = false;
 //Top level Game Loop
 app.ticker.add(() => {
     input.tick();
 
-    if(puzzle.changedThisTick)
+    if(puzzle.changedThisTick && !solved)
     {
         allChecked = false;
         //instantly solve the one we expect to have changed.
@@ -74,14 +75,14 @@ app.ticker.add(() => {
         lineSolver(false,input.lastChanged.x);
         validateLine(true,input.lastChanged.y);
         validateLine(false,input.lastChanged.x);
-
     }
+
     //I intended to do two optimizations. The first was to cancel previous 'threads' and restart on changes, the second was hash map.
     //hash maps worked so well for my 30x30 that im just gonna call it good enough for now. I can optimize later.
 
     //then, do the rest. THis is mostly not needed, but we can change more than one input per tick.
     //plus, it will be fast because repetative work will just be polling a hashmap. That's O(n) not O(n^2) like the solve.
-    if(!allChecked && solveCounts === 0){
+    if(!allChecked && solveCounts === 0 && !solved){
         //we need to track if we are solving or not.
         for(let r = 0;r<puzzle.height;r++){
             lineSolver(true,r);
@@ -94,6 +95,12 @@ app.ticker.add(() => {
         allChecked = true;
     }
 
+    solved = puzzle.isSolved();
+    if(solved)
+    {
+        input.inputActive = false;
+        setHintsVisible(false);
+    }
     //reset
     puzzle.changedThisTick = false;
     // increment the ticker

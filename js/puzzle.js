@@ -13,6 +13,9 @@ const puzzle = {
     rowHintItems: [],
     colHintItems: [],
     changedThisTick: false,
+    isSolved: function(){
+        return this.rowHintItems.every(x => x.isCorrect) && this.colHintItems.every(x => x.isCorrect);
+    }
 }
 
 const padding = {x:2,y:2};

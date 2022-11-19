@@ -36,6 +36,16 @@ class Hint {
             this.items[i].text.style.fill = info ? theme.hintInfoTextColor : theme.hintTextColor;
         }
     }
+    setVisible(visible)
+    {
+        for(let i = 0;i<this.items.length;i++)
+        {
+            //hint system kind of bugs out when the hint is correct. it's like "oh youre good"
+            //but we aren't good: there's info!
+            //i need to fix the solver for that, but we're doing correction checks anyway so this is fine?
+            this.items[i].text.visible = visible;
+        }
+    }
 }
 class HintItem
 {
@@ -171,4 +181,16 @@ function createHints()
     }
 }
 
-export {createHints, initializeHints, hints};
+function setHintsVisible(visible)
+{
+    for(let r = 0;r<puzzle.height;r++)
+    {
+        puzzle.rowHintItems[r].setVisible(visible);
+    }
+    for(let c = 0;c<puzzle.width;c++)
+    {
+        puzzle.colHintItems[c].setVisible(visible);
+    }
+}
+
+export {createHints, initializeHints, setHintsVisible, hints};
