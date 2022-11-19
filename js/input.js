@@ -87,14 +87,12 @@ class Input  {
     }
     onAlt()
     {
-        console.log("on alt");
         this.pressed = true;
         puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flipEmpty();
         this.setToFill = puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].filled;
     }
     onPointerDown()
     {
-        console.log("on pointer down");
         if(input.inputMode === 'mouse'){
             this.onSelect();
         }else{

@@ -46,7 +46,6 @@ app.stage.on('mousedown', (event) => {
     }
 });
 app.stage.on('rightdown', function(event) {
-    event.preventDefault();
     let c = input.mouseGridCoords;
     if(isCoordInBounds(c))
     {
@@ -58,7 +57,7 @@ app.stage.on('pointerup', (event) => {
         input.onPointerUp();
 });
 
-document.body.addEventListener('contextmenu', (e) => {
+document.getElementById("app").addEventListener('contextmenu', (e) => {
     e.preventDefault();
 });
 
