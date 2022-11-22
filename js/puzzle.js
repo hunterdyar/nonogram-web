@@ -26,12 +26,15 @@ const boxElements = [];//pile of grid sprites
 
 //A single grid. Keeps track of it's position, draws itself, and changes color as needed.
 class PuzzleSquare {
-    constructor(x,y,square) {
+    constructor(x,y,square,mark) {
         this.x = x;
         this.y = y;
         this.filled = 0;
         this.box = square
+        this.mark = mark;
         this.box.tint = theme.emptyColor;
+
+        this.mark.visible = false;
     }
     isFilled(){return this.filled === 1};
     isMarkEmpty(){return this.filled === -1}
@@ -71,7 +74,13 @@ class PuzzleSquare {
     {
         this.filled = f;
         this.box.tint = this.filled === 1 ? theme.filledColor : theme.emptyColor;
-        this.box.tint = this.filled === -1 ? theme.markedEmptyColor : this.box.tint;
+        this.box.tint = this.filled === -1 ? theme.emptyColor : this.box.tint;
+        if(this.filled === -1){
+            this.mark.visible = true;
+            this.mark.tint = theme.markedEmptyColor;
+        }else{
+            this.mark.visible = false;
+        }
         //todo: draw an x?
         puzzle.changedThisTick = true;
         input.lastChanged = {x:this.x,y:this.y};
@@ -85,18 +94,28 @@ function initializeGrid(app){
         for(let j = 0; j < puzzle.height; j++) {
             // create a Sprite for the box.
             const square = PIXI.Sprite.from(white);//16x16
+            const mark = PIXI.Sprite.from("img/x32.png");
             // set the anchor point to the top left.
             square.anchor.set(0,0);
+            mark.anchor.set(0,0);
+
             let scale = theme.boxDisplaySize/16;//16 = texture->width
+            let markScale = theme.boxDisplaySize/32; //32 wide for x32.png
             square.scale.set(scale);
+            mark.scale.set(markScale);
 
             let c = gridToWorldCoordinates(i,j);
             square.x = c.x;
             square.y = c.y;
+            mark.x = c.x;
+            mark.y = c.y;
 
             boxElements.push(square);
-            puzzle.level[i][j] = new PuzzleSquare(i,j,square);
+            boxElements.push(mark);
+            puzzle.level[i][j] = new PuzzleSquare(i,j,square,mark);
             field.addChild(square);
+            field.addChild(mark);
+
         }
     }
 
