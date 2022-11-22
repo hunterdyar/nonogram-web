@@ -74,15 +74,20 @@ function lineSolver(isRow,index)
     }
     let size = isRow ? puzzle.width : puzzle.height;
 
-    let map = solvedMap[key(hint,line)]
-    if(map === true || map === false)
+    //don't bother searching if there is no info.
+    if(!line.includes(0))
     {
-        setInfoStatus(isRow,index,map);
+        setInfoStatus(isRow,index,false);
     }else{
-        worker.postMessage([size,line,hint,isRow,index]);
-        solveCounts++;
+        let map = solvedMap[key(hint,line)]
+        if(map === true || map === false)
+        {
+            setInfoStatus(isRow,index,map);
+        }else{
+            worker.postMessage([size,line,hint,isRow,index]);
+            solveCounts++;
+        }
     }
-
 //    let solved = solve_line(size,line, hint);
 }
 

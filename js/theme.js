@@ -11,6 +11,7 @@ export const theme = {
     errorColor: 0xaf4b3b,
     cursorColor: 0xc18549,
     hintInfoTextColor: 0x384d64,
+    hintErrorTextColor: 0xaf4b3b,
     gridLineColor: 0x384d64,
     completeFade: 0.5,
 }

@@ -26,14 +26,21 @@ class Hint {
     }
     setInfoHere(info)
     {
+        //hint system kind of bugs out when the hint is correct. it's like "oh youre good"
+        //but we aren't good: there's info! full the incomplete with x's
+        //i need to fix the solver for that, but we're doing correction checks anyway so this is fine?
+
         this.isInfoHere = info;
+        let showInfo = this.isInfoHere || (this.isCorrect && !this.isComplete);
+        let color = showInfo ? theme.hintInfoTextColor : theme.hintTextColor;
+        //make red if wrong.
+        if(this.isComplete && !this.isCorrect)
+        {
+            color = theme.hintErrorTextColor;
+        }
         for(let i = 0;i<this.items.length;i++)
         {
-            //hint system kind of bugs out when the hint is correct. it's like "oh youre good"
-            //but we aren't good: there's info!
-            //i need to fix the solver for that, but we're doing correction checks anyway so this is fine?
-            let info = this.isInfoHere || (this.isCorrect && !this.isComplete);
-            this.items[i].text.style.fill = info ? theme.hintInfoTextColor : theme.hintTextColor;
+            this.items[i].text.style.fill = color;
         }
     }
     setVisible(visible)

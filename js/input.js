@@ -81,7 +81,8 @@ class Input  {
         this.cursorSprite.roundPixels = true;
         stage.addChild(this.cursorSprite);
     }
-    onSelect(){
+    onSelect()
+    {
         if(!this.inputActive){return;}
         this.pressed = true;
         puzzle.level[this.cursorGridCoords.x][this.cursorGridCoords.y].flip()
