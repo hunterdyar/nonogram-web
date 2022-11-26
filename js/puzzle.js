@@ -1,11 +1,13 @@
 import {theme} from "./theme.js";
-import {createHints} from "./hints.js";
-import {input} from "./input.js";
+import {createHints, initializeHints} from "./hints.js";
+import {initializeCursor, input} from "./input.js";
+import {initializeDecoration} from "./decoration.js";
 
 //make a class? it is kind of just data.
 const puzzle = {
-    width: 5,//cols
-    height: 5,// rows
+    loaded: false,
+    width: 10,//cols
+    height: 10,// rows
     soution: [],//given
     level: [],//user input
     rowHints: [],
@@ -125,20 +127,58 @@ function initializeGrid(app){
     app.stage.addChild(field);
 }
 
-function createPuzzle()
+async function createPuzzle(app, puzzleName)
 {
+    puzzle.loaded = false;
     puzzle.solution = [];
 
-    puzzle.solution.push([1,1,1,1,1]);
-    puzzle.solution.push([1,0,1,1,1]);
-    puzzle.solution.push([1,0,0,1,1]);
-    puzzle.solution.push([1,0,0,0,1]);
-    puzzle.solution.push([1,0,0,0,0]);
+    let puzzleURL = "puzzles/"+puzzleName+"_PZL.png";//
+    let texture =  await PIXI.Texture.fromURL(puzzleURL);
 
+    //    let texture = PIXI.utils.TextureCache['pic'];
+    let img = texture.baseTexture.resource.source;
+    let canvas = document.createElement("CANVAS");
+    let ctx = canvas.getContext('2d');
+    let w = texture.width;
+    let h = texture.height;
+    ctx.drawImage(img, 0, 0);
+    let pixel = ctx.getImageData(0, 0, w, h);
+    let data = pixel.data;
 
+    console.log(data);
+    //load source pixel into solution
+    for(let x = 0;x<w;x++)
+    {
+        let sol = [];
+        for(let y = 0;y<h;y++)
+        {
+            let i = (x+(y*w))*4;
+            let r = data[i];
+            let g = data[i+1];
+            let b = data[i+2];
+            let a = data[i+3];
+            let av = (r+g+b)/3;
+//            console.log(r,g,b,a);
+            sol.push(av < 125 ? 1 : 0);
+        }
+        puzzle.solution.push(sol);
+    }
+
+    //configure puzzle
+    puzzle.width = w;
+    puzzle.height = h;
+    puzzle.loaded = true;
+
+    //setup background and such
+    initializeGrid(app);
     //todo load data
     createHints();
-
+    //Init hints.
+    initializeHints(app);
+    //
+    initializeDecoration(app);
+    //Init cursor
+    initializeCursor(app);
 }
 //save/load
 //serialize/deserialize

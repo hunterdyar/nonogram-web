@@ -1,9 +1,8 @@
-import {input,initializeCursor} from "./input.js";
+import {input} from "./input.js";
 import {theme} from "./theme.js";
-import {puzzle, isCoordInBounds, initializeGrid, createPuzzle} from "./puzzle.js";
-import {initializeHints, setHintsVisible} from "./hints.js";
+import {puzzle, isCoordInBounds, createPuzzle} from "./puzzle.js";
+import {setHintsVisible} from "./hints.js";
 import {lineSolver, solveCounts} from "./solver/solver.js";
-import {initializeDecoration} from "./decoration.js ";
 import {validateLine} from "./validator.js";
 //set width to html width?
 //tbh we should do full-page and use an iframe.
@@ -14,18 +13,12 @@ const app = new PIXI.Application({
 let HTMLContainer = document.getElementById('app');
 HTMLContainer.appendChild(app.view);
 
+//loud the level data from file.
 
+await createPuzzle(app,"Cat");
 //create puzzle then initialize it.
-initializeGrid(app);
-//Init hints.
-initializeHints(app);
 
-initializeDecoration(app);
 
-//Init cursor
-initializeCursor(app);
-
-createPuzzle();
 
 //Reacting to events
 let tick = 0;
@@ -65,6 +58,11 @@ let allChecked = false;
 let solved = false;
 //Top level Game Loop
 app.ticker.add(() => {
+    if(!puzzle.loaded)
+    {
+        return;
+    }
+
     input.tick();
 
     if(puzzle.changedThisTick && !solved)

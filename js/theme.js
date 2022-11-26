@@ -1,5 +1,5 @@
 export const theme = {
-    boxDisplaySize: 64,//display size
+    boxDisplaySize: 32,//display size
     lineWidth: 1,
     strongLineWidth: 3,
     //https://lospec.com/palette-list/insecta
